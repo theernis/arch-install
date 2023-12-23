@@ -53,6 +53,29 @@ disk_check() {
 	fi
 }
 
+read_password() {
+	NAME=$1
+	DEFAULT=$2
+	PASSWORD=""
+
+	read -p "enter $NAME password (default $2)" -s PASSWD1
+	echo
+	if [ -z "$PASSWD1" ]; then
+		PASSWORD=$DEFAULT
+	else
+		read -p "enter password again" -s PASSWD2
+		echo
+		if [ "$PASSWD1" = "$PASSWD2" ]; then
+			PASSWORD=$PASSWD1
+		else
+			echo "passwords do not match, try again"
+			read_password $NAME $DEFAULT PASSWORD
+		fi
+	fi
+
+	eval "$3='PASSWORD'"
+}
+
 
 ### inputs
 ###-------
@@ -75,7 +98,7 @@ default_no "wipe disk before installation" wipe
 #region and city
 ls -l /usr/share/zoneinfo/ | grep '^d' | awk '{print $NF}'
 read -p "region (default Europe): " region
-if [ -z "$region"]; then
+if [ -z "$region" ]; then
 	region="Europe"
 fi
 if [ ! -d /usr/share/zoneinfo/$region/ ]; then
@@ -92,7 +115,43 @@ fi
 
 #localine
 cat /etc/locale.gen | sed 's/#//g' | grep -E ' UTF-8' | cut -d " " -f 1
-read -p "localine (default en_US.UTF-8):"
+read -p "localine (default en_US.UTF-8): " localine
+if [ -z "$localine" ]; then
+	localine="en_US.UTF-8"
+fi
+localine_found=0
+while read -r line; do
+	if [ "$line" = "$localine" ]; then
+		localine_found=1
+	fi
+done < <(cat /etc/locale.gen | sed 's/#//g' | grep -E ' UTF-8' | cut -d " " -f 1)
+case "$localine_found" in
+	1 ) ;;
+	* ) echo "unexpected input, exiting"; exit;;
+esac
+
+#hostname
+read -p "hostname (default archlinux): " hostname
+if [ -z "$hostname" ]; then
+	hostname="archlinux"
+fi
+if [[ ! "$hostname" =~ ^[a-zA-Z0-9]+$ ]]; then
+	echo "unexpected formatting, exiting"
+	exit
+fi
+
+#root password
+read_password "root" "password" root_password
+
+#username
+read -p "username (default user): " user_name
+if [ -z "$user_name" ]; then
+	user_name="user"
+fi
+
+#user password
+read_password "user" "user" user_password
+
 
 case "$debug_mode" in 
 	y ) exit ;;
