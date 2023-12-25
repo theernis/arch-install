@@ -191,6 +191,47 @@ genfstab -U /mnt/usb > /mnt/usb/etc/fstab
 ### Configure Base System
 ###----------------------
 
+#locale
+arch-chroot /mnt/usb ln -sf /usr/share/zoneinfo/$region/$city /etc/localtime
+current_locale=$(arch-chroot /mnt/usb/ cat /etc/locale.gen)
+new_locale=""
+while IFS= read -r line; do
+	if [[ $line == *"$localine"* ]]; then
+		new_locale+="$localine UTF-8\n"
+	else
+		if [[ $line == \#* ]]; then
+			new_locale+="$line\n"
+		else
+			new_locale+="#$line\n"
+		fi
+	fi
+done <<< "$current_locale"
+arch-chroot /mnt/usb echo -e "$new_locale" > /etc/locale.gen
+arch-chroot /mnt/usb locale-gen
+arch-chroot /mnt/usb echo LANG=$localine > /etc/locale.conf
+
+#time/date
+arch-chroot /mnt/usb hwclock --systohc
+
+#hostname
+arch-chroot /mnt/usb echo $hostname > /etc/hostname
+hosts_file=""
+hosts_file+="127.0.0.1  localhost\n"
+hosts_file+="::1        localhost\n"
+hosts_file+="127.0.1.1  hostname.localdomain  hostname\n"
+arch-chroot /mnt/usb echo -e $hosts_flie > /etc/hosts
+
+#password
+arch-chroot echo -e "$root_password\n$root_password\n" | passwd root
+
+#bootloader
+arch-chroot pacman -S grub efibootmgr
+arch-chroot grub-install --target=i386-pc --recheck $disk
+arch-chroot grub-install --target=x86_64-efi --efi-directory /boot --recheck --removable
+arch-chroot grub-mkconfig -o /boot/grub/grub.cfg
+
+#networking
+
 
 ### Optional configurations
 ###------------------------
