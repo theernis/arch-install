@@ -267,6 +267,11 @@ arch-chroot /mnt/usb groupadd wheel
 arch-chroot /mnt/usb usermod -aG wheel user
 
 #sudo
+arch-chroot /mnt/usb pacman -S sudo
+arch-chroot /mnt/usb echo "%sudo ALL=(ALL) ALL" > /etc/sudoers.d/10-sudo
+arch-chroot /mnt/usb groupadd sudo
+arch-chroot /mnt/usb usermod -aG sudo $user_name
+arch-chroot /mnt/usb pacman -S polkit
 
 
 ### Optional configurations
