@@ -222,7 +222,7 @@ hosts_file+="127.0.1.1  hostname.localdomain  hostname\n"
 arch-chroot /mnt/usb echo -e $hosts_flie > /etc/hosts
 
 #password
-arch-chroot echo -e "$root_password\n$root_password\n" | passwd root
+arch-chroot /mnt/usb echo -e "$root_password\n$root_password\n" | passwd root
 
 #bootloader
 arch-chroot pacman -S grub efibootmgr
@@ -231,6 +231,42 @@ arch-chroot grub-install --target=x86_64-efi --efi-directory /boot --recheck --r
 arch-chroot grub-mkconfig -o /boot/grub/grub.cfg
 
 #networking
+ethernet_network=""
+ethernet_network+="[Match]\n"
+ethernet_network+="Name=en*\n"
+ethernet_netwokr+="Name=eth*\n\n"
+ethernet_network+="[Network]\n"
+ethernet_network+="DHCP=yes\n"
+ethernet_network+="IPv6PrivacyExtensions=yes\n\n"
+ethernet_network+="[DHCPv4]\n"
+ethernet_network+="RouteMetric=10\n\n"
+ethernet_network+="[IPv6AcceptRA]\n"
+ethernet_network+="RouteMetric=10\n"
+arch-chroot /mnt/usb echo -e $ethernet_network > /etc/systemd/network/10-ethernet.network
+arch-chroot /mnt/usb systemctl enable systemd-networkd.service
+arch-chroot /mnt/usb pacman -S iwd
+arch-chroot /mnt/usb systemctl enable iwd.service
+wireless_network=""
+wireless_network+="[Match]\n"
+wireless_network+="Name=wl*\n\n"
+wireless_network+="[Network]\n"
+wireless_network+="DHCP=yes\n"
+wireless_network+="IPv6PrivacyExtensions=yes\n\n"
+wireless_network+="[DHCPv4]\n"
+wireless_network+="RouteMetric=20\n\n"
+wireless_network+="[IPv6AcceptRA]\n"
+wireless_network+="RouteMetric=20\n"
+arch-chroot /mnt/usb systemctl enable systemd-resolved.service
+ln -sf /run/systemd/resolve/stub-resolv.conf /mnt/usb/etc/resolv.conf
+arch-chroot /mnt/usb systemctl enable systemd-timesyncd.service
+
+#user
+arch-chroot /mnt/usb useradd -m $user_name
+arch-chroot /mnt/usb echo -e "$user_password\n$user_password\n"
+arch-chroot /mnt/usb groupadd wheel
+arch-chroot /mnt/usb usermod -aG wheel user
+
+#sudo
 
 
 ### Optional configurations
