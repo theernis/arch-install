@@ -225,10 +225,10 @@ arch-chroot /mnt/usb echo -e $hosts_flie > /etc/hosts
 arch-chroot /mnt/usb echo -e "$root_password\n$root_password\n" | passwd root
 
 #bootloader
-arch-chroot pacman -S grub efibootmgr
-arch-chroot grub-install --target=i386-pc --recheck $disk
-arch-chroot grub-install --target=x86_64-efi --efi-directory /boot --recheck --removable
-arch-chroot grub-mkconfig -o /boot/grub/grub.cfg
+arch-chroot /mnt/usb pacman -S grub efibootmgr
+arch-chroot /mnt/usb grub-install --target=i386-pc --recheck $disk
+arch-chroot /mnt/usb grub-install --target=x86_64-efi --efi-directory /boot --recheck --removable
+arch-chroot /mnt/usb grub-mkconfig -o /boot/grub/grub.cfg
 
 #networking
 ethernet_network=""
