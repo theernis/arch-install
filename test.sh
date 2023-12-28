@@ -4,8 +4,9 @@
 ###----------
 
 default_yes() {
+	TEXT=$1
 	ANSWER=""
-	read -p "$1 (Y/n): " ANSWER
+	read -p "$TEXT (Y/n): " ANSWER
 	case "$ANSWER" in
 		[yY] ) ANSWER="y";;
 		[nN] ) ANSWER="n";;
@@ -15,8 +16,9 @@ default_yes() {
 }
 
 default_no() {
+	TEXT=$1
 	ANSWER=""
-	read -p "$1 (N/y): " ANSWER
+	read -p "$TEXT (N/y): " ANSWER
 	case "$ANSWER" in
 		[yY] ) ANSWER="y";;
 		[nN] ) ANSWER="n";;
@@ -26,14 +28,27 @@ default_no() {
 }
 
 yes_or_no() {
+	TEXT=$1
 	ANSWER=""
-	read -p "$1 (y/n): " ANSWER
+	read -p "$TEXT (y/n): " ANSWER
 	case "$ANSWER" in
 		[yY] ) ANSWER="y";;
 		[nN] ) ANSWER="n";;
-		*    ) yes_or_no $1 ANSWER;;
+		*    ) yes_or_no $TEXT ANSWER;;
 	esac
 	eval "$2='$ANSWER'"
+}
+
+ask_default() {
+	TEXT=$1
+	DEFAULT=$2
+	ANSWER=""
+	read -p "$TEXT (default $DEFAULT): " ANSWER
+	case "$ANSWER" in
+		"" ) ANSWER=$DEFAULT;;
+		*  ) ;;
+	esac
+	eval "$3='$ANSWER'"
 }
 
 disk_check() {
@@ -58,7 +73,7 @@ read_password() {
 	DEFAULT=$2
 	PASSWORD=""
 
-	read -p "enter $NAME password (default $2)" -s PASSWD1
+	read -p "enter $NAME password (default $DEFAULT)" -s PASSWD1
 	echo
 	if [ -z "$PASSWD1" ]; then
 		PASSWORD=$DEFAULT
@@ -85,40 +100,27 @@ default_yes "debug mode" debug_mode
 
 #selecting disk for installation
 lsblk
-read -p "select device to install on (example and default /dev/sdb): " disk
-echo $disk
-case "$disk" in
-	"" ) disk="/dev/sdb";;
-	*  ) disk_check $disk;;
-esac
+ask_default "select device to install on" "/dev/sdb" disk
+disk_check $disk
 
 #wipe (N/y)
 default_no "wipe disk before installation" wipe
 
 #region and city
 ls -l /usr/share/zoneinfo/ | grep '^d' | awk '{print $NF}'
-read -p "region (default Europe): " region
-if [ -z "$region" ]; then
-	region="Europe"
-fi
+ask_default "region" "Europe" region
 if [ ! -d /usr/share/zoneinfo/$region/ ]; then
 	exit
 fi
 ls /usr/share/zoneinfo/$region/
-read -p "city (default Vilnius): " city
-if [ -z "$city" ]; then
-	city="Vilnius"
-fi
+ask_default "city" "Vilnius" city
 if [ ! -f /usr/share/zoneinfo/$region/$city ]; then
 	exit
 fi
 
 #localine
 cat /etc/locale.gen | sed 's/#//g' | grep -E ' UTF-8' | cut -d " " -f 1
-read -p "localine (default en_US.UTF-8): " localine
-if [ -z "$localine" ]; then
-	localine="en_US.UTF-8"
-fi
+ask_default "localine" "en_US.UTF-8" localine
 localine_found=0
 while read -r line; do
 	if [ "$line" = "$localine" ]; then
@@ -131,10 +133,7 @@ case "$localine_found" in
 esac
 
 #hostname
-read -p "hostname (default archlinux): " hostname
-if [ -z "$hostname" ]; then
-	hostname="archlinux"
-fi
+ask_default "hostname" "archlinux" hostname
 if [[ ! "$hostname" =~ ^[a-zA-Z0-9]+$ ]]; then
 	echo "unexpected formatting, exiting"
 	exit
@@ -144,10 +143,7 @@ fi
 read_password "root" "password" root_password
 
 #username
-read -p "username (default user): " user_name
-if [ -z "$user_name" ]; then
-	user_name="user"
-fi
+ask_default "username" "user" user_name
 
 #user password
 read_password "user" "user" user_password
