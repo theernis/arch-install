@@ -149,10 +149,6 @@ ask_default "username" "user" user_name
 read_password "user" "user" user_password
 
 
-case "$debug_mode" in 
-	y ) exit ;;
-	* ) ;;
-esac
 ### Install Base System
 ###--------------------
 
@@ -161,13 +157,16 @@ case "$wipe" in
 	y ) dd if=/dev/zero of=$disk status=progress && sync;;
 	* ) ;;
 esac
+[[ $debug_mode == "y" ]] && sleep 10
 
 #partition
 sgdisk -o -n 1:0:+10M -t 1:EF02 -n 2:0:+500M -t 2:EF00 -n 3:0:0 -t 3:8300 $disk
+[[ $debug_mode == "y" ]] && sleep 10
 
 #format
 mkfs.fat -F32 $disk"2"
 mkfs.ext4 -F  $disk"3"
+[[ $debug_mode == "y" ]] && sleep 10
 
 #mount
 mkdir -p /mnt/usb
@@ -176,12 +175,15 @@ mount $disk"3" /mnt/usb
 mkdir /mnt/usb/boot
 umount $disk"2"
 mount $disk"2" /mnt/usb/boot
+[[ $debug_mode == "y" ]] && sleep 10
 
 #pacstrap
-pacstrap /mnt/usb linux linux-firmware base vim 
+pacstrap /mnt/usb linux linux-firmware base vim
+[[ $debug_mode == "y" ]] && sleep 10
 
 #fstab
 genfstab -U /mnt/usb > /mnt/usb/etc/fstab
+[[ $debug_mode == "y" ]] && sleep 10
 
 
 ### Configure Base System
@@ -205,6 +207,7 @@ done <<< "$current_locale"
 arch-chroot /mnt/usb echo -e "$new_locale" > /etc/locale.gen
 arch-chroot /mnt/usb locale-gen
 arch-chroot /mnt/usb echo LANG=$localine > /etc/locale.conf
+[[ $debug_mode == "y" ]] && sleep 10
 
 #time/date
 arch-chroot /mnt/usb hwclock --systohc
@@ -219,12 +222,14 @@ arch-chroot /mnt/usb echo -e $hosts_flie > /etc/hosts
 
 #password
 arch-chroot /mnt/usb echo -e "$root_password\n$root_password\n" | passwd root
+[[ $debug_mode == "y" ]] && sleep 10
 
 #bootloader
 arch-chroot /mnt/usb pacman -S grub efibootmgr
 arch-chroot /mnt/usb grub-install --target=i386-pc --recheck $disk
 arch-chroot /mnt/usb grub-install --target=x86_64-efi --efi-directory /boot --recheck --removable
 arch-chroot /mnt/usb grub-mkconfig -o /boot/grub/grub.cfg
+[[ $debug_mode == "y" ]] && sleep 10
 
 #networking
 ethernet_network=""
@@ -255,12 +260,14 @@ wireless_network+="RouteMetric=20\n"
 arch-chroot /mnt/usb systemctl enable systemd-resolved.service
 ln -sf /run/systemd/resolve/stub-resolv.conf /mnt/usb/etc/resolv.conf
 arch-chroot /mnt/usb systemctl enable systemd-timesyncd.service
+[[ $debug_mode == "y" ]] && sleep 10
 
 #user
 arch-chroot /mnt/usb useradd -m $user_name
 arch-chroot /mnt/usb echo -e "$user_password\n$user_password\n"
 arch-chroot /mnt/usb groupadd wheel
 arch-chroot /mnt/usb usermod -aG wheel user
+[[ $debug_mode == "y" ]] && sleep 10
 
 #sudo
 arch-chroot /mnt/usb pacman -S sudo
@@ -268,6 +275,7 @@ arch-chroot /mnt/usb echo "%sudo ALL=(ALL) ALL" > /etc/sudoers.d/10-sudo
 arch-chroot /mnt/usb groupadd sudo
 arch-chroot /mnt/usb usermod -aG sudo $user_name
 arch-chroot /mnt/usb pacman -S polkit
+[[ $debug_mode == "y" ]] && sleep 10
 
 
 ### Optional configurations
