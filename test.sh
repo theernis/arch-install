@@ -164,16 +164,16 @@ sgdisk -o -n 1:0:+10M -t 1:EF02 -n 2:0:+500M -t 2:EF00 -n 3:0:0 -t 3:8300 $disk
 [[ $debug_mode == "y" ]] && sleep 10
 
 #format
+umount $disk"2"
+umount $disk"3"
 mkfs.fat -F32 $disk"2"
 mkfs.ext4 -F  $disk"3"
 [[ $debug_mode == "y" ]] && sleep 10
 
 #mount
 mkdir -p /mnt/usb
-umount $disk"3"
 mount $disk"3" /mnt/usb
 mkdir /mnt/usb/boot
-umount $disk"2"
 mount $disk"2" /mnt/usb/boot
 [[ $debug_mode == "y" ]] && sleep 10
 
@@ -225,7 +225,7 @@ arch-chroot /mnt/usb echo -e "$root_password\n$root_password\n" | passwd root
 [[ $debug_mode == "y" ]] && sleep 10
 
 #bootloader
-arch-chroot /mnt/usb pacman -S grub efibootmgr
+arch-chroot /mnt/usb pacman --noconfirm -S grub efibootmgr
 arch-chroot /mnt/usb grub-install --target=i386-pc --recheck $disk
 arch-chroot /mnt/usb grub-install --target=x86_64-efi --efi-directory /boot --recheck --removable
 arch-chroot /mnt/usb grub-mkconfig -o /boot/grub/grub.cfg
@@ -245,7 +245,7 @@ ethernet_network+="[IPv6AcceptRA]\n"
 ethernet_network+="RouteMetric=10\n"
 arch-chroot /mnt/usb echo -e $ethernet_network > /etc/systemd/network/10-ethernet.network
 arch-chroot /mnt/usb systemctl enable systemd-networkd.service
-arch-chroot /mnt/usb pacman -S iwd
+arch-chroot /mnt/usb pacman --noconfirm -S iwd
 arch-chroot /mnt/usb systemctl enable iwd.service
 wireless_network=""
 wireless_network+="[Match]\n"
@@ -270,11 +270,11 @@ arch-chroot /mnt/usb usermod -aG wheel user
 [[ $debug_mode == "y" ]] && sleep 10
 
 #sudo
-arch-chroot /mnt/usb pacman -S sudo
+arch-chroot /mnt/usb pacman --noconfirm -S sudo
 arch-chroot /mnt/usb echo "%sudo ALL=(ALL) ALL" > /etc/sudoers.d/10-sudo
 arch-chroot /mnt/usb groupadd sudo
 arch-chroot /mnt/usb usermod -aG sudo $user_name
-arch-chroot /mnt/usb pacman -S polkit
+arch-chroot /mnt/usb pacman --noconfirm -S polkit
 [[ $debug_mode == "y" ]] && sleep 10
 
 
