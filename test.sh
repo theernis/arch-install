@@ -167,7 +167,7 @@ sgdisk -o -n 1:0:+10M -t 1:EF02 -n 2:0:+500M -t 2:EF00 -n 3:0:0 -t 3:8300 $disk
 
 #format
 mkfs.fat -F32 $disk"2"
-mkfs.ext4 -F $disk"3"
+mkfs.ext4 $disk"3"
 
 #mount
 mkdir -p /mnt/usb
