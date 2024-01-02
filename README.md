@@ -8,3 +8,4 @@ mainly based on installation guide by Chris Magyar:
 https://mags.zone/help/arch-usb.html
 ## contributors
 people whoe helped me:
+
