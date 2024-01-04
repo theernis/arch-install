@@ -307,8 +307,8 @@ if [[ $journal == "y" ]]; then
 	journal_file+="Storage=volatile\n"
 	journal_file+="SystemMaxUse=16M"
 	journal_file+="RuntimeMaxUse=32M"
-	arch-chroot /mnt/usb mkdir -p /etc/systemd/journald.conf.d
-	arch-chroot /mnt/usb touch /etc/systemd/journald.conf.d/10-volatile.conf
+	mkdir -p /etc/systemd/journald.conf.d
+	touch /etc/systemd/journald.conf.d/10-volatile.conf
 
 	[[ $debug_mode == "y" ]] && sleep 10
 fi
