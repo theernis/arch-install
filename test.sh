@@ -222,7 +222,7 @@ hosts_file+="127.0.1.1  hostname.localdomain  hostname\n"
 arch-chroot /mnt/usb echo -e $hosts_flie > /etc/hosts
 
 #password
-arch-chroot /mnt/usb echo -e "$root_password\n$root_password\n" | passwd root
+echo -e "$root_password\n$root_password\n" | arch-chroot /mnt/usb passwd root
 [[ $debug_mode == "y" ]] && sleep 10
 
 #bootloader
@@ -265,7 +265,7 @@ arch-chroot /mnt/usb systemctl enable systemd-timesyncd.service
 
 #user
 arch-chroot /mnt/usb useradd -m $user_name
-arch-chroot /mnt/usb echo -e "$user_password\n$user_password\n" | passwd $user_name
+echo -e "$user_password\n$user_password\n" | arch-chroot /mnt/usb passwd $user_name
 arch-chroot /mnt/usb groupadd wheel
 arch-chroot /mnt/usb usermod -aG wheel user
 [[ $debug_mode == "y" ]] && sleep 10
