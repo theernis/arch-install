@@ -148,16 +148,26 @@ ask_default "username" "user" user_name
 #user password
 read_password "user" "user" user_password
 
+#noatime
+default_no "noatime configuration" noatime
+
+#journal
+default_no "journal configurations" journal
+
+#mkinitcpio
+#nomodoset
+#microcode
+#interface names
+
 
 ### Install Base System
 ###--------------------
 
 #wipe
 case "$wipe" in
-	y ) dd if=/dev/zero of=$disk status=progress && sync;;
+	y ) dd if=/dev/zero of=$disk status=progress && sync ; [[ $debug_mode == "y" ]] && sleep 10 ;;
 	* ) ;;
 esac
-[[ $debug_mode == "y" ]] && sleep 10
 
 #partition
 sgdisk -o -n 1:0:+10M -t 1:EF02 -n 2:0:+500M -t 2:EF00 -n 3:0:0 -t 3:8300 $disk
@@ -258,6 +268,7 @@ wireless_network+="[DHCPv4]\n"
 wireless_network+="RouteMetric=20\n\n"
 wireless_network+="[IPv6AcceptRA]\n"
 wireless_network+="RouteMetric=20\n"
+arch-chroot /mnt/usb echo -e $wireless_network > /etc/systemd/network/20-wifi.network
 arch-chroot /mnt/usb systemctl enable systemd-resolved.service
 ln -sf /run/systemd/resolve/stub-resolv.conf /mnt/usb/etc/resolv.conf
 arch-chroot /mnt/usb systemctl enable systemd-timesyncd.service
@@ -281,3 +292,28 @@ arch-chroot /mnt/usb pacman --noconfirm -S polkit
 
 ### Optional configurations
 ###------------------------
+
+#noatime
+if [[ $noatime == "y" ]]; then
+	arch-chroot /mnt/usb sed -i "s/relatime/noatime/g" /etc/fstab
+	arch-chroot /mnt/usb sed -i "s/atime/noatime/g" /etc/fstab
+	[[ $debug_mode == "y" ]] && sleep 10
+fi
+
+#journal
+if [[ $journal == "y" ]]; then
+	journal_file=""
+	journal_file+="[Journal]\n"
+	journal_file+="Storage=volatile\n"
+	journal_file+="SystemMaxUse=16M"
+	journal_file+="RuntimeMaxUse=32M"
+	mkdir -p /etc/systemd/journald.conf.d
+	touch /etc/systemd/journald.conf.d/10-volatile.conf
+
+	[[ $debug_mode == "y" ]] && sleep 10
+fi
+
+#mkinitcpio
+#nomodoset
+#microcode
+#inteface names
