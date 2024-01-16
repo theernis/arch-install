@@ -283,7 +283,7 @@ arch-chroot /mnt/usb usermod -aG wheel user
 
 #sudo
 arch-chroot /mnt/usb pacman --noconfirm -S sudo
-arch-chroot /mnt/usb echo "%sudo ALL=(ALL) ALL" > /etc/sudoers.d/10-sudo
+echo "%sudo ALL=(ALL) ALL" > arch-chroot /mnt/usb tee -a /etc/sudoers.d/10-sudo 
 arch-chroot /mnt/usb groupadd sudo
 arch-chroot /mnt/usb usermod -aG sudo $user_name
 arch-chroot /mnt/usb pacman --noconfirm -S polkit
