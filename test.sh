@@ -215,21 +215,21 @@ while IFS= read -r line; do
 		fi
 	fi
 done <<< "$current_locale"
-arch-chroot /mnt/usb echo -e "$new_locale" > /etc/locale.gen
+echo -e "$new_locale" > arch-chroot /mnt/usb /etc/locale.gen
 arch-chroot /mnt/usb locale-gen
-arch-chroot /mnt/usb echo LANG=$localine > /etc/locale.conf
+echo LANG=$localine > arch-chroot /mnt/usb /etc/locale.conf
 [[ $debug_mode == "y" ]] && sleep 10
 
 #time/date
 arch-chroot /mnt/usb hwclock --systohc
 
 #hostname
-arch-chroot /mnt/usb echo $hostname > /etc/hostname
+echo $hostname > arch-chroot /mnt/usb /etc/hostname
 hosts_file=""
 hosts_file+="127.0.0.1  localhost\n"
 hosts_file+="::1        localhost\n"
 hosts_file+="127.0.1.1  hostname.localdomain  hostname\n"
-arch-chroot /mnt/usb echo -e $hosts_flie > /etc/hosts
+echo -e $hosts_flie > arch-chroot /mnt/usb /etc/hosts
 
 #password
 echo -e "$root_password\n$root_password\n" | arch-chroot /mnt/usb passwd root
@@ -254,7 +254,7 @@ ethernet_network+="[DHCPv4]\n"
 ethernet_network+="RouteMetric=10\n\n"
 ethernet_network+="[IPv6AcceptRA]\n"
 ethernet_network+="RouteMetric=10\n"
-arch-chroot /mnt/usb echo -e $ethernet_network > /etc/systemd/network/10-ethernet.network
+echo -e $ethernet_network > arch-chroot /mnt/usb /etc/systemd/network/10-ethernet.network
 arch-chroot /mnt/usb systemctl enable systemd-networkd.service
 arch-chroot /mnt/usb pacman --noconfirm -S iwd
 arch-chroot /mnt/usb systemctl enable iwd.service
@@ -268,7 +268,7 @@ wireless_network+="[DHCPv4]\n"
 wireless_network+="RouteMetric=20\n\n"
 wireless_network+="[IPv6AcceptRA]\n"
 wireless_network+="RouteMetric=20\n"
-arch-chroot /mnt/usb echo -e $wireless_network > /etc/systemd/network/20-wifi.network
+echo -e $wireless_network > arch-chroot /mnt/usb /etc/systemd/network/20-wifi.network
 arch-chroot /mnt/usb systemctl enable systemd-resolved.service
 ln -sf /run/systemd/resolve/stub-resolv.conf /mnt/usb/etc/resolv.conf
 arch-chroot /mnt/usb systemctl enable systemd-timesyncd.service
