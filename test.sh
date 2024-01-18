@@ -164,7 +164,7 @@ default_no "nomodoset configurations" nomodoset
 default_no "microcode configurations" microcode
 
 #interface names
-default_no "interface name configurations" interface_names
+default_no "interface names configurations" interface_names
 
 
 ### Install Base System
@@ -321,6 +321,25 @@ if [[ $journal == "y" ]]; then
 fi
 
 #mkinitcpio
+if [[ $mkinitcpio == "y" ]]; then
+	arch-chroot /mnt/usb sed -i "/^HOOKS=/ s/.*HOOKS=(base udev modconf block filesystems keyboard fsck)/" /etc/mkinitcpio.conf
+	arch-chroot /mnt/usb sed -i "/^PRESETS=/ s/.*PRESETS=('default')/" /etc/mkinitcpio.d/linux.preset
+	arch-chroot /mnt/usb rm /boot/initramfs-linux-fallback.img
+	arch-chroot /mnt/usb mkinitcpio -P
+	arch-chroot /mnt/usb grub-mkconfig -o /boot/grub/grub.cfg
+fi
+
 #nomodoset
+if [[ $nomodoset == "y" ]]; then
+
+fi
+
 #microcode
+if [[ $microcode == "y" ]]; then
+
+fi
+
 #inteface names
+if [[ $interface_names == "y" ]]; then
+
+fi
