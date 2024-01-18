@@ -155,9 +155,16 @@ default_no "noatime configuration" noatime
 default_no "journal configurations" journal
 
 #mkinitcpio
+default_no "mkinitcpio configurations" mkinitcpio
+
 #nomodoset
+default_no "nomodoset configurations" nomodoset
+
 #microcode
+default_no "microcode configurations" microcode
+
 #interface names
+default_no "interface name configurations" interface_names
 
 
 ### Install Base System
