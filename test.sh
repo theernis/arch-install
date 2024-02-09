@@ -339,10 +339,13 @@ fi
 
 #microcode
 if [[ $microcode == "y" ]]; then
-
+	[[ $nomodeset != "y" ]] && arch-chroot /mnt/usb cp /boot/grub/grub.cfg /etc/grub.d/40_custom #copy only if it wasnt already copied for nomodeset
+	arch-chroot /mnt/usb pacman -S amd-ucode intel-ucode
+	arch-chroot /mnt/usb -i 's/initrd/initrd \/intel-ucode.img \/amd-ucode.img/g' /etc/grub.d/40_custom
+	arch-chroot /mnt/usb grub-mkconfig -o /boot/grub/grub.cfg
 fi
 
 #inteface names
 if [[ $interface_names == "y" ]]; then
-
+	arch-chroot /mnt/usb ln -s /dev/null /etc/udev/rules.d/80-net-setup-link.rules
 fi
