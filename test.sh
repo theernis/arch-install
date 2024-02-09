@@ -331,7 +331,10 @@ fi
 
 #nomodoset
 if [[ $nomodoset == "y" ]]; then
-
+	arch-chroot /mnt/usb cp /boot/grub/grub.cfg /etc/grub.d/40_custom
+	arch-chroot /mnt/usb sed -i 's|menuentry \x27Arch\(.*)\x27 \(.*)|menuentry \x27Arch \x27\1 (nomodeset)\x27 \2|' /etc/grub.d/40_custom
+	arch-chroot /mnt/usb sed -i '/\/vmlinuz-linux/ s/$/ nomodeset/' /etc/grub.d/40_custom
+	arch-chroot /mnt/usb grub-mkconfig -o /boot/grub/grub.cfg
 fi
 
 #microcode
