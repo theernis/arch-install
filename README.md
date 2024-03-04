@@ -13,5 +13,12 @@ run on arch terminal:
 ## credits
 mainly based on installation guide by Chris Magyar:
 https://mags.zone/help/arch-usb.html
+## todo
+fix sudo
+fix variable leaks
+add ability for multiple users
+add break points in case of errors
+reformat the code
+add ability to use arguments instead of inputs
 ## contributors
 people whoe helped me:
