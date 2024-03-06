@@ -1,0 +1,1 @@
+%sudo ALL=(ALL) ALL /mnt/usb tee -a /etc/sudoers.d/10-sudo

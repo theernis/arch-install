@@ -172,7 +172,7 @@ default_no "interface names configurations" interface_names
 
 #wipe
 case "$wipe" in
-	y ) dd if=/dev/zero of=$disk status=progress && sync ; [[ $debug_mode == "y" ]] && sleep 10 ;;
+	y ) dd if=/dev/zero of=$disk bs=1M status=progress && sync ; [[ $debug_mode == "y" ]] && sleep 10 ;;
 	* ) ;;
 esac
 
