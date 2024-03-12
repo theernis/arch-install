@@ -285,12 +285,12 @@ arch-chroot /mnt/usb systemctl enable systemd-timesyncd.service
 arch-chroot /mnt/usb useradd -m $user_name
 echo -e "$user_password\n$user_password\n" | arch-chroot /mnt/usb passwd $user_name
 arch-chroot /mnt/usb groupadd wheel
-arch-chroot /mnt/usb usermod -aG wheel user
+arch-chroot /mnt/usb usermod -aG wheel $user_name
 [[ $debug_mode == "y" ]] && sleep 10
 
 #sudo
 arch-chroot /mnt/usb pacman --noconfirm -S sudo
-echo "%sudo ALL=(ALL) ALL" > arch-chroot /mnt/usb tee -a /etc/sudoers.d/10-sudo 
+echo "%sudo ALL=(ALL) ALL" | arch-chroot /mnt/usb tee -a /etc/sudoers.d/10-sudo 
 arch-chroot /mnt/usb groupadd sudo
 arch-chroot /mnt/usb usermod -aG sudo $user_name
 arch-chroot /mnt/usb pacman --noconfirm -S polkit
