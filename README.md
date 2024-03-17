@@ -14,10 +14,6 @@ run on arch terminal:
 mainly based on installation guide by Chris Magyar:
 https://mags.zone/help/arch-usb.html
 ## todo
-fix sudo (should be fixed in this commit)
-
-fix adding user to wheel (should be fixe in this commit)
-
 fix variable leaks
 
 add ability for multiple users
