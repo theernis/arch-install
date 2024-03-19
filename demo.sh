@@ -12,7 +12,7 @@ print_help() {
 	echo "-h, --help		show this"
 	echo "-d, --debug=[yYnN]	turn on debug mode"
 	echo "--disk=*			set install disk path (example /dev/sdb)"
-	echo "--wipe			wipe the disk before installation"
+	echo "-w, --wipe		wipe the disk before installation"
 }
 
 check_disk() {
@@ -71,7 +71,7 @@ while test $# -gt 0; do
 			unset tmp
 			shift
 			;;
-		--wipe)
+		-w|--wipe)
 			wipe=1
 			;;
 		*)
