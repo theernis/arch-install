@@ -12,6 +12,7 @@ print_help() {
 	echo "-h, --help		show this"
 	echo "-d, --debug=[yYnN]	turn on debug mode"
 	echo "--disk=*			set install disk path (example /dev/sdb)"
+	echo "--wipe			wipe the disk before installation"
 }
 
 check_disk() {
@@ -33,8 +34,10 @@ check_disk() {
 errors=0
 debug_mode=0
 disk_path=""
+wipe=0
 
 unset_all() {
+	unset wipe
 	unset disk_path
 	unset debug_mode
 	unset errors
@@ -63,8 +66,13 @@ while test $# -gt 0; do
 			tmp="${tmp#--disk=}"
 			check_disk $tmp && tmp=""
 			[[ tmp == "" ]] && errors=$((errors+1))
+			[[ tmp == "" ]] && echo "invalid disk path specified"
+			disk_path=$tmp
 			unset tmp
 			shift
+			;;
+		--wipe)
+			wipe=1
 			;;
 		*)
 			echo "unknown argument \"$1\""
