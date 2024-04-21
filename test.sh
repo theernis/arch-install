@@ -349,3 +349,6 @@ fi
 if [[ $interface_names == "y" ]]; then
 	arch-chroot /mnt/usb ln -s /dev/null /etc/udev/rules.d/80-net-setup-link.rules
 fi
+
+#this not existing cost me hours
+arch-chroot /mnt/usb pacman -S networkmanager
