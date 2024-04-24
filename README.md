@@ -24,5 +24,7 @@ reformat the code
 
 add ability to use arguments instead of inputs
 
+add nvme support
+
 ## contributors
 people whoe helped me:
